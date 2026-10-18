@@ -46,7 +46,6 @@ def test_scale_linetype_strings_tuples():
     assert p == "scale_linetype_manual_strings"
 
 
-
 def test_default_linetype_palette_limit():
     palette = scale_linetype().palette
     assert list(palette(4)) == ["solid", "dashed", "dashdot", "dotted"]
