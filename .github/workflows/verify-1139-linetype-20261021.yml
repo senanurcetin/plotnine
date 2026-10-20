@@ -1,0 +1,33 @@
+name: Verify Plotnine linetype capacity fix
+on:
+  push:
+    branches:
+      - verify/1139-linetype-20261021
+permissions:
+  contents: read
+jobs:
+  focused:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.11', '3.13']
+    env:
+      MPLBACKEND: Agg
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install project and tests
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e . pytest pytest-cov ruff
+      - name: Run linetype regression suite
+        run: python -m pytest -q tests/test_scale_linetype.py --disable-warnings --maxfail=1
+      - name: Ruff affected files
+        if: always()
+        run: python -m ruff check plotnine/scales/scale_linetype.py tests/test_scale_linetype.py
